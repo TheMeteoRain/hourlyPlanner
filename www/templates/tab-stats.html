@@ -1,0 +1,27 @@
+<ion-view view-title="Stats">
+  <ion-content>
+
+    <div class="text-center">
+
+      <div class="card">
+        <div class="item item-text-wrap">
+          <h1>General stats</h1>
+          <p><b>{{totalHours}} h</b> total work done </p>
+          <p><b>{{averageHours | number : 1}} h</b> average hours per work day</p>
+        </div>
+      </div>
+
+      <div class="card" ng-repeat="chore in chores">
+        <div class="item item-text-wrap">
+          <h1>{{chore.name}}</h1>
+          <p><b>{{chore.hours}} h</b> work done</p>
+          <p><b>{{chore.ofTotal | number : 2}}%</b> of total hours</p>
+          <p><b>{{chore.weekday}}</b> busiest weekday</p>
+        </div>
+      </div>
+
+
+    </div>
+
+  </ion-content>
+</ion-view>

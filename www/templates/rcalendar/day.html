@@ -1,0 +1,49 @@
+<div class="dayview">
+    <ion-slide-box class="dayview-slide" on-slide-changed="slideChanged($index)" does-continue="true"
+                   show-pager="false" delegate-handle="dayview-slide">
+        <ion-slide ng-repeat="view in views track by $index">
+
+
+            <ion-content has-bouncing="false" overflow-scroll="false">
+                <!-- Current view -->
+                <div class="dayview-normal-event-table" ng-if="$index===currentViewIndex">
+                    <div class="row row-border text-center" ng-repeat="(x, tm) in view.rows track by $index">
+
+                        <!-- Hours -->
+                        <div class="col col-20 col-border cell-day side">
+                            {{::tm.time | date: formatHourColumn}}
+                        </div>
+
+                        <!-- Activities -->
+                        <div class="col col-80 col-border calendar-cell cell-day" ng-click="select(tm.time, tm.events)">
+
+                            <div ng-class="{'calendar-event-wrap': tm.events}" ng-if="tm.events">
+                                <div ng-repeat="displayEvent in tm.events" class="calendar-event cell-day"
+                                     ng-style="{top: (60*displayEvent.startOffset/hourParts)+'px', left: 100/displayEvent.overlapNumber*displayEvent.position+'%', width: 100/displayEvent.overlapNumber+'%', height: 60*(displayEvent.endIndex -displayEvent.startIndex - (displayEvent.endOffset + displayEvent.startOffset)/hourParts)+'px'}">
+                                    <div class="calendar-event-inner" ng-if="displayEvent.event"
+                                         ng-style="{'background-color': displayEvent.event.activity.color.color}"
+                                         ng-click="eventSelected({event:displayEvent.event})">
+                                        {{displayEvent.event.activity.name}}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Previews -->
+                <div class="dayview-normal-event-table"
+                     ng-if="$index!==currentViewIndex">
+                    <div class="row row-border" ng-repeat="tm in view.rows track by $index">
+                        <div class="col col-20 col-border text-center side">
+                            {{::tm.time | date: formatHourColumn}}
+                        </div>
+                        <div class="col col-80 col-border calendar-cell cell-day">
+
+                        </div>
+                    </div>
+                </div>
+            </ion-content>
+        </ion-slide>
+    </ion-slide-box>
+</div>

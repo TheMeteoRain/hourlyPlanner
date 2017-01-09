@@ -1,0 +1,44 @@
+<div>
+    <ion-slide-box class="monthview-slide" on-slide-changed="slideChanged($index)" does-continue="true"
+                   show-pager="false" delegate-handle="monthview-slide">
+        <ion-slide ng-repeat="view in views track by $index">
+
+            <!-- Current month view -->
+            <div ng-if="$index===currentViewIndex">
+                <!-- Weekdays -->
+                <div class="row row-top row-border text-center">
+                    <div class="col col-border header" ng-repeat="(col, day) in view.dates.slice(0,7) track by day.date">
+                        <small>{{::day.date | date: formatDayHeader}}</small>
+                    </div>
+                </div>
+                <!-- Days -->
+                <div class="row text-center" ng-repeat="row in [0,1,2,3,4,5]">
+                    <div class="col col-border" ng-repeat="col in [0,1,2,3,4,5,6]"
+                         ng-click="select(view.dates[row*7+col].date, view.dates[row*7+col].events)"
+                         ng-class="getHighlightClass(view.dates[row*7+col])" ng-model="selectDate"
+                         ng-style="{'height': cellHeight+'px', 'padding-top': cellHeight/3+'px'}">
+                        {{view.dates[row*7+col].label}}
+                    </div>
+                </div>
+            </div>
+
+            <!-- Another month preview -->
+            <div ng-if="$index!==currentViewIndex">
+                <!-- Weekdays -->
+                <div class="row row-top row-border text-center">
+                    <div class="col col-border header" ng-repeat="(col, day) in view.dates.slice(0,7) track by day.date">
+                        <small>{{::day.date | date: formatDayHeader}}</small>
+                    </div>
+                </div>
+                <!-- Days -->
+                <div class="row text-center" ng-repeat="row in [0,1,2,3,4,5]">
+                    <div class="col col-border" ng-repeat="col in [0,1,2,3,4,5,6]"
+                         ng-style="{'height': cellHeight+'px', 'padding-top': cellHeight/3+'px'}">
+                        {{view.dates[row*7+col].label}}
+                    </div>
+                </div>
+            </div>
+
+        </ion-slide>
+    </ion-slide-box>
+</div>

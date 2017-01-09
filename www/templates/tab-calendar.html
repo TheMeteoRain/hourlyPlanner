@@ -1,0 +1,234 @@
+<ion-view view-title={{viewTitle}}>
+  <ion-nav-bar class="bar-positive">
+    <ion-nav-buttons side="left">
+      <button class="button button-icon ion-ios-list-outline" ng-click="choreListModal.show()"></button>
+    </ion-nav-buttons>
+    <ion-nav-buttons side="right">
+      <button class="button button-icon ion-compose" ng-click="addActivityModal.show()"></button>
+    </ion-nav-buttons>
+  </ion-nav-bar>
+
+  <div class="bar bar-subheader bar-royal">
+    <div class="button-bar">
+    <button class="button" ng-disabled="isToday()" ng-click="today()">Today</button>
+    <button class="button" ng-click="changeMode('month')">Month</button>
+    <button class="button" ng-click="changeMode('week')">Week</button>
+    <button class="button" ng-click="changeMode('day')">Day</button>
+    </div>
+  </div>
+
+  <ion-content scroll="false" class="main-content has-subheader">
+    <calendar ng-model="calendar.currentDate" calendar-mode="calendar.mode" event-source="calendar.eventSource"
+              range-changed="reloadSource(startTime, endTime, newDate)"
+              event-selected="onEventSelected(event)" title-changed="onViewTitleChanged(title)"
+              time-selected="onTimeSelected(selectedTime, events, date)" step="60"
+              starting-day-month="1" starting-day-week="1" format-hour-column="HH:mm"></calendar>
+  </ion-content>
+
+  <!-- ADD ACTIVITY MODAL -->
+  <script id="addActivityModal" type="text/ng-template">
+    <ion-modal-view>
+      <ion-header-bar class="bar bar-header bar-balanced">
+        <h1 class="title">Add Activity </h1>
+        <button class="button button-clear button-primary" ng-click="addActivityModal.hide()">Cancel</button>
+      </ion-header-bar>
+      <ion-content class="padding">
+
+        <div class="button button-full button-assertive" ng-if="choreList.length == 0" ng-click="choreListModal.show(); addActivityModal.hide()">
+          You do not have any activities in your list. Press here to add.
+        </div>
+
+        <div class="list" ng-if="choreList.length != 0">
+
+          <!-- Activity -->
+          <label class="item item-input item-select">
+            <div class="input-label">
+              Activity
+            </div>
+            <select ng-model="newActivity.activity" ng-options="chore.name for chore in choreList"
+                    ng-style="{'background-color': newActivity.activity.color.color, 'color': 'white'}">
+            </select>
+          </label>
+
+          <!-- Description -->
+          <label class="item item-input">
+            <textarea ng-model="newActivity.description" placeholder="Short description of what you did"></textarea>
+          </label>
+
+          <!-- Start time -->
+          <div class="row">
+            <div class="col">
+              <label class="item item-input item-select">
+                <div class="input-label">
+                  Start Time - Hour
+                </div>
+                <select ng-model="newActivity.startHour" ng-options="hour for hour in activityOptions.hours track by hour"></select>
+              </label>
+            </div>
+          </div>
+
+          <!-- Duration -->
+          <div class="row">
+            <div class="col">
+              <label class="item item-input item-select">
+                <div class="input-label">
+                  Duration - Hour
+                </div>
+                <select ng-model="newActivity.durationHour" ng-options="hour for hour in activityOptions.hours track by hour"></select>
+              </label>
+            </div>
+          </div>
+
+          <!-- Day -->
+          <label class="item item-input item-select">
+            <div class="input-label">
+              Day
+            </div>
+            <select ng-model="newActivity.day" ng-options="day for day in activityOptions.days"></select>
+          </label>
+          <!-- Month -->
+          <label class="item item-input item-select">
+            <div class="input-label">
+              Month
+            </div>
+            <select ng-model="newActivity.month" ng-options="month.id as month.name for month in activityOptions.months"></select>
+          </label>
+
+          <!-- Year -->
+          <label class="item item-input item-select">
+            <div class="input-label">
+              Year
+            </div>
+            <select ng-model="newActivity.year" ng-options="year for year in activityOptions.years"></select>
+          </label>
+
+          <button class="button button-full button-positive" ng-click="insertActivity()">Create</button>
+        </div>
+      </ion-content>
+    </ion-modal-view>
+  </script>
+
+  <!-- EDIT ACTIVITY MODAL -->
+  <script id="editActivityModal" type="text/ng-template">
+    <ion-modal-view>
+      <ion-header-bar class="bar bar-header bar-energized">
+        <h1 class="title">Edit Activity</h1>
+        <button class="button button-clear button-primary" ng-click="editActivityModal.hide()">Cancel</button>
+      </ion-header-bar>
+      <ion-content class="padding">
+        <div class="list">
+
+          <!-- Activity -->
+          <label class="item item-input item-select">
+            <div class="input-label">
+              Activity
+            </div>
+            <select ng-model="editActivity.activity" ng-options="chore.name for chore in choreList track by chore.name"
+                    ng-style="{'background-color': editActivity.activity.color.color, 'color': 'white'}">
+            </select>
+          </label>
+
+          <!-- Description -->
+          <label class="item item-input">
+            <textarea ng-model="editActivity.description" placeholder="No description"></textarea>
+          </label>
+
+          <!-- Start time -->
+          <div class="row">
+            <div class="col">
+              <label class="item item-input item-select">
+                <div class="input-label">
+                  Start Time - Hour
+                </div>
+                <select ng-model="editActivity.startHour" ng-options="hour for hour in activityOptions.hours track by hour"></select>
+              </label>
+            </div>
+          </div>
+
+          <!-- Duration -->
+          <div class="row">
+            <div class="col">
+              <label class="item item-input item-select">
+                <div class="input-label">
+                  Duration - Hour
+                </div>
+                <select ng-model="editActivity.durationHour" ng-options="hour for hour in activityOptions.hours track by hour"></select>
+              </label>
+            </div>
+          </div>
+
+          <!-- Day -->
+          <label class="item item-input item-select">
+            <div class="input-label">
+              Day
+            </div>
+            <select ng-model="editActivity.day" ng-options="day for day in activityOptions.days"></select>
+          </label>
+          <!-- Month -->
+          <label class="item item-input item-select">
+            <div class="input-label">
+              Month
+            </div>
+            <select ng-model="editActivity.month" ng-options="month.id as month.name for month in activityOptions.months"></select>
+          </label>
+
+          <!-- Year -->
+          <label class="item item-input item-select">
+            <div class="input-label">
+              Year
+            </div>
+            <select ng-model="editActivity.year" ng-options="year for year in activityOptions.years"></select>
+          </label>
+
+          <button class="button button-full button-positive" ng-click="modifyActivity(selectedActivity)">Edit</button>
+          <button class="button button-full button-assertive" ng-click="deleteActivity(selectedActivity)">Delete</button>
+        </div>
+      </ion-content>
+    </ion-modal-view>
+  </script>
+
+  <!-- CHORE LIST MODAL -->
+  <script id="choreListModal" type="text/ng-template">
+    <ion-modal-view>
+      <ion-header-bar class="bar bar-header bar-royal">
+        <h1 class="title">List of Activities</h1>
+        <button class="button button-clear button-primary" ng-click="choreListModal.hide()">Cancel</button>
+      </ion-header-bar>
+      <ion-content class="padding">
+        <div class="list">
+
+          <!-- NAME -->
+          <label class="item item-input">
+            <span class="input-label">Activity Name</span>
+            <input ng-model="newChore.name" type="text">
+          </label>
+
+          <!-- COLOR -->
+          <label class="item item-input item-select">
+            <div class="input-label">
+              Color
+            </div>
+            <select ng-model="newChore.color" ng-options="color.name for color in activityOptions.colors"
+                    ng-style="{'background-color': newChore.color.color, 'color': 'white'}">
+            </select>
+          </label>
+
+          <!-- BUTTONS -->
+          <button class="button button-full button-positive" ng-click="insertChore()">Add to list</button>
+          <button class="button button-full button-calm" ng-click="choreListModal.hide()">Go back</button>
+
+          <!-- CHORE LIST -->
+          <div class="list list-inset" scroll="true">
+            <span class="item text-center">Activities</span>
+            <div class="item item-icon-right" ng-repeat="chore in choreList"
+                 ng-style="{'background-color': chore.color.color, 'color': 'white'}"
+                 ng-click="showConfirm(chore)">
+              {{chore.name}} <i class="icon ion-close"></i>
+            </div>
+          </div>
+        </div>
+      </ion-content>
+    </ion-modal-view>
+  </script>
+</ion-view>
+

@@ -1,0 +1,55 @@
+<div class="weekview">
+    <ion-slide-box class="weekview-slide" on-slide-changed="slideChanged($index)" does-continue="true"
+                   show-pager="false" delegate-handle="weekview-slide">
+        <ion-slide ng-repeat="view in views track by $index">
+            {{view.rows.date[view.dates]}}
+            <!-- Weekdays header -->
+            <div class="row row-border text-center no-border">
+                <div class="col col-15 col-border "> </div>
+                <div class="col col-border calendar-cell header" ng-repeat="(col, day) in view.dates"
+                     ng-click="select(view.dates[col].date)">
+                    <div>{{::day.date|date:'EEE'}}</div>
+                    <div style="line-height: 100%;">{{::day.date|date:'d'}}</div>
+
+                </div>
+            </div>
+
+            <ion-content class="weekview-normal-event-container" has-bouncing="false" overflow-scroll="false">
+                <div class="weekview-normal-event-table">
+                    <!-- Current week view -->
+                    <div ng-if="$index===currentViewIndex">
+                        <div class="row row-border" ng-repeat="(x, row) in view.rows track by $index">
+                            <div class="col col-15 col-border text-center cell-day side">
+                                {{::row[0].time | date: formatHourColumn}}
+                            </div>
+                            <div class="col col-border calendar-cell cell-day" ng-click="select(tm.time, tm.events)"
+                                 ng-repeat="(col, tm) in row track by tm.time">
+
+                                <div ng-class="{'calendar-event-wrap': tm.events}" ng-if="tm.events">
+                                    <div ng-repeat="displayEvent in tm.events" class="calendar-event cell-day"
+                                         ng-click="eventSelected({event:displayEvent.event})"
+                                         ng-style="{top: (60*displayEvent.startOffset/hourParts)+'px',left: 100/displayEvent.overlapNumber*displayEvent.position+'%', width: 100/displayEvent.overlapNumber+'%', height: 60*(displayEvent.endIndex -displayEvent.startIndex - (displayEvent.endOffset + displayEvent.startOffset)/hourParts)+'px'}">
+                                        <div class="calendar-event-inner text-center"
+                                             ng-style="{'background-color': displayEvent.event.activity.color.color}">
+                                            <div class="t">{{displayEvent.event.activity.name}}</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Another week preview -->
+                    <div ng-if="$index!==currentViewIndex">
+                        <div class="row row-border" ng-repeat="row in view.rows track by $index">
+                            <div class="col col-15 col-border text-center cell-day side">
+                                {{::row[0].time | date: formatHourColumn}}
+                            </div>
+                            <div class="col col-border calendar-cell cell-day" ng-repeat="tm in row track by tm.time"></div>
+                        </div>
+                    </div>
+                </div>
+            </ion-content>
+        </ion-slide>
+    </ion-slide-box>
+</div>
